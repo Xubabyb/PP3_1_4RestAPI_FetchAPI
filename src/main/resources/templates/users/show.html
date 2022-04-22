@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+</head>
+<body>
+<p><b>Id:</b><span th:text="${user.id}"></span> </p>
+<p><b>First name:</b><span th:text="${user.firstName}"></span> </p>
+<p><b>Last name:</b><span th:text="${user.lastName}"></span> </p>
+<p><b>Email:</b><span th:text="${user.email}"></span> </p>
+<a th:href="@{/admin/{id}/edit(id=${user.id})}">Edit</a>
+<form th:method="DELETE" th:action="@{/admin/{id}(id=${user.id})}">
+    <input type="submit" value="Delete"/>
+</form>
+<div th:insert="~{exit :: exit_button}"></div>
+</body>
+</html>

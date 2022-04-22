@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" lang="en">
+<head>
+    <title>Spring Security Example</title>
+</head>
+<body>
+<div th:object="${user}">
+    <p>
+        <code>Hello</code>
+    </p>
+    <p><b>Id:</b><span th:text="${user.id}"></span> </p>
+    <p><b>First name:</b><span th:text="${user.firstName}"></span> </p>
+    <p><b>Last name:</b><span th:text="${user.lastName}"></span> </p>
+    <p><b>Email:</b><span th:text="${user.email}"></span> </p>
+</div>
+
+<br>
+
+
+<div th:insert="~{exit :: exit_button}"></div>
+</body>
+</html>
