@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,7 +20,8 @@ public class AdminController {
     }
 
     @GetMapping()
-    public String index(Model model) {
+    public String index(@AuthenticationPrincipal org.springframework.security.core.userdetails.User user, Model model) {
+        model.addAttribute("user", userService.findByEmail(user.getUsername()).orElseThrow());
         model.addAttribute("users", userService.getAllUsers());
         return "users/index";
     }
