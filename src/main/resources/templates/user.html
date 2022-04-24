@@ -12,6 +12,12 @@
     <p><b>First name:</b><span th:text="${user.firstName}"></span> </p>
     <p><b>Last name:</b><span th:text="${user.lastName}"></span> </p>
     <p><b>Email:</b><span th:text="${user.email}"></span> </p>
+    <code>Your roles are</code>
+    <table>
+        <tr th:each="role : ${user.getRoles()}">
+            <th th:text="${role.name}"></th>
+        </tr>
+    </table>
 </div>
 
 <br>
