@@ -1,67 +1,47 @@
 package ru.kata.spring.boot_security.demo.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.service.RoleService;
 import ru.kata.spring.boot_security.demo.service.UserService;
-
-import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
     private final UserService userService;
+    private final RoleService roleService;
 
-    public AdminController(UserService userService) {
+    @Autowired
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
-    @GetMapping()
+    @GetMapping
     public String index(@AuthenticationPrincipal org.springframework.security.core.userdetails.User user, Model model) {
         model.addAttribute("user", userService.findByEmail(user.getUsername()).orElseThrow());
         model.addAttribute("users", userService.getAllUsers());
-        return "users/index";
-    }
-
-    @GetMapping("/{id}")
-    public String show(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
-        return "users/show";
-    }
-
-    @GetMapping("/new")
-    public String newUser(@ModelAttribute("user") User user) { //тут кладем в форму нового User, либо через @ModelAttribute
-        return "users/new";                                  //либо через Model model и  добавляя в атрибуты new User
+        model.addAttribute("roles", roleService.getAllRoles());
+        return "admin";
     }
 
     @PostMapping()
-    public String create(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "users/new";
-        }
+    public String create(@ModelAttribute("user") User user) {
         userService.saveUser(user);
         return "redirect:/admin";
-    }
-
-    @GetMapping("/{id}/edit")
-    public String edit(Model model, @PathVariable("id") Long id) {
-        model.addAttribute("user", userService.getUserById(id));
-        return "users/edit";
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "users/edit";
-        }
+    public String update(@ModelAttribute("user") User user) {
         userService.saveUser(user);
         return "redirect:/admin";
     }
 
-    @DeleteMapping("/{id}")
+    @GetMapping("/{id}/delete")
     public String delete(@PathVariable("id") Long id) {
         userService.removeUserById(id);
         return "redirect:/admin";

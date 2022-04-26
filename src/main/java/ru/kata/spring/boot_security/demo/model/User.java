@@ -1,14 +1,13 @@
 package ru.kata.spring.boot_security.demo.model;
 
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
+import java.util.Set;
 
 @Entity
 @Data
@@ -17,23 +16,21 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Length(message = "Name should not be between 2 and 20 characters", min = 2, max = 20)
-    @NotEmpty(message = "Field first name cannot be empty")
+    @NotEmpty
     @Column(name = "name")
     private String firstName;
-    @Length(message = "Last name should not be between 2 and 30 characters", min = 2, max = 30)
-    @NotEmpty(message = "Field last name cannot be empty")
+    @NotEmpty
     private String lastName;
-    @NotEmpty(message = "Field mail cannot be empty")
-    @Email(message = "Email should be valid")
+    @NotEmpty
     private String email;
+    @NotEmpty
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private Collection<Role> roles;
+    private Set<Role> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

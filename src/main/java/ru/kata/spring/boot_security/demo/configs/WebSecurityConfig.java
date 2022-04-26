@@ -31,9 +31,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/").permitAll() //TODO надо убрать в финальной версии вообще
-                .antMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
+                .antMatchers("/admin/**")
+                .hasRole("ADMIN")
+                .anyRequest()
+                .authenticated()
                 .and()
                 .formLogin().successHandler(successUserHandler)
                 .loginPage("/login")
