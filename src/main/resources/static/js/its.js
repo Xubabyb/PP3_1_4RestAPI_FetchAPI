@@ -64,11 +64,12 @@ function _appendUserRow(user) {
             .append($('<td>').attr('id', 'userData[' + user.id + '][id]').text(user.id))
             .append($('<td>').attr('id', 'userData[' + user.id + '][firstName]').text(user.firstName))
             .append($('<td>').attr('id', 'userData[' + user.id + '][lastName]').text(user.lastName))
+            .append($('<td>').attr('id', 'userData[' + user.id + '][age]').text(user.age))
             .append($('<td>').attr('id', 'userData[' + user.id + '][email]').text(user.email))
             .append($('<td>').attr('id', 'userData[' + user.id + '][roles]').text(user.roles.map(role => role.name)))
             .append($('<td>').append($('<button class="btn btn-sm btn-info">')
                 .click(() => {
-                     loadUserAndShowModalForm(user.id);
+                    loadUserAndShowModalForm(user.id);
                 }).text('Edit')))
             .append($('<td>').append($('<button class="btn btn-sm btn-danger">')
                 .click(() => {
@@ -88,6 +89,7 @@ function _eraseUserModalForm() {
 function _setReadonlyAttr(value = true) {
     userFormId.find('#firstName').prop('readonly', value);
     userFormId.find('#lastName').prop('readonly', value);
+    userFormId.find('#age').prop('readonly', value);
     userFormId.find('#email').prop('readonly', value);
     userFormId.find('#password').prop('readonly', value);
     userFormId.find('#roles').prop('disabled', value);
@@ -102,6 +104,7 @@ function updateUser(id) {
         'id': parseInt(userFormId.find('#id').val()),
         'firstName': userFormId.find('#firstName').val(),
         'lastName': userFormId.find('#lastName').val(),
+        'age': userFormId.find('#age').val(),
         'email': userFormId.find('#email').val(),
         'password': userFormId.find('#password').val(),
         'roles': userFormId.find('#roles').val().map(roleId => parseInt(roleId))
@@ -142,6 +145,7 @@ function updateUser(id) {
 
                 $('#userData\\[' + userData.id + '\\]\\[firstName\\]').text(userData.firstName)
                 $('#userData\\[' + userData.id + '\\]\\[lastName\\]').text(userData.lastName)
+                $('#userData\\[' + userData.id + '\\]\\[age\\]').text(userData.age)
                 $('#userData\\[' + userData.id + '\\]\\[email\\]').text(userData.email)
                 $('#userData\\[' + userData.id + '\\]\\[roles\\]').text(userData.roles.map(role => role.name));
                 userFormId.modal('hide');
@@ -171,6 +175,7 @@ function loadUserAndShowModalForm(id, editMode = true) {
                     userFormId.find('#id').val(id);
                     userFormId.find('#firstName').val(user.firstName);
                     userFormId.find('#lastName').val(user.lastName);
+                    userFormId.find('#age').val(user.age);
                     userFormId.find('#email').val(user.email);
                     userFormId.find('#password').val('');
                     if (editMode) {
@@ -226,6 +231,7 @@ function loadUserForInsertForm() {
     _eraseUserAddForm();
     userAddFormId.find('#newfirstName').val('');
     userAddFormId.find('#newlastName').val('');
+    userAddFormId.find('#newage').val('0');
     userAddFormId.find('#newemail').val('');
     userAddFormId.find('#newpassword').val('');
 
@@ -252,6 +258,7 @@ function insertUser() {
     let user = {
         'firstName': userAddFormId.find('#newfirstName').val(),
         'lastName': userAddFormId.find('#newlastName').val(),
+        'age': userAddFormId.find('#newage').val(),
         'email': userAddFormId.find('#newemail').val(),
         'password': userAddFormId.find('#newpassword').val(),
         'roles': userAddFormId.find('#newroles').val().map(roleId => parseInt(roleId))
