@@ -68,7 +68,7 @@ function _appendUserRow(user) {
             .append($('<td>').attr('id', 'userData[' + user.id + '][roles]').text(user.roles.map(role => role.name)))
             .append($('<td>').append($('<button class="btn btn-sm btn-info">')
                 .click(() => {
-                    loadUserAndShowModalForm(user.id);
+                     loadUserAndShowModalForm(user.id);
                 }).text('Edit')))
             .append($('<td>').append($('<button class="btn btn-sm btn-danger">')
                 .click(() => {

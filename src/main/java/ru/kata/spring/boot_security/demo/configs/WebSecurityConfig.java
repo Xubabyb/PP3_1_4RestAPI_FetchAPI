@@ -44,18 +44,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
     }
 
-    // аутентификация inMemory
-    @Bean
-    @Override
-    public UserDetailsService userDetailsService() {
-        return new InMemoryUserDetailsManager(
-                User.builder()
-                        .username("user")
-                        .password(passwordEncoder().encode("user"))
-                        .roles("USER")
-                        .build());
-    }
-
     @Bean
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);

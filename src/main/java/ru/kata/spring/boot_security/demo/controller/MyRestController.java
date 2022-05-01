@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
@@ -23,18 +24,18 @@ public class MyRestController {
     }
 
     @GetMapping("/roles")
-    public List<Role> findAllRoles() {
-        return roleService.getAllRoles();
+    public ResponseEntity<Iterable<Role>> findAllRoles() {
+        return ResponseEntity.ok(roleService.getAllRoles());
     }
 
     @GetMapping("/users")
-    public List<User> showAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> findAll() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/users/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<User> getOne(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PostMapping("/users")
