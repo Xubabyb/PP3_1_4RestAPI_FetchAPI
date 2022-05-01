@@ -1,40 +1,31 @@
-<div class="container-fluid text-center col-3">
-    <form class="col" th:method="POST" th:action="@{/admin}" th:object="${user}">
-        <div>
-            <label for="firstName">Firstname<input type="text" id="firstName" name="firstName"
-                                                   class="form-control" placeholder="First name">
-            </label>
-        </div>
-        <div>
-            <label for="lastName">LastName<input type="text" id="lastName" name="lastName"
-                                                 class="form-control" placeholder="Last name">
-            </label>
-        </div>
-        <div>
-            <label for="email">Email<input type="email" id="email" name="email"
-                                           class="form-control" placeholder="Email">
-            </label>
-        </div>
-        <div>
-            <label for="password">Password<input type="password" id="password" name="password"
-                                                 class="form-control" placeholder="Password">
-            </label>
-        </div>
-        <!--        <div>-->
-        <!--            <label for="newRoles">Role</label>-->
-        <!--            <select multiple class="form-control" id="newroles" name="roles[]"></select>-->
-        <!--        </div>-->
-        <div class="form-group">
-            <label for="newRole">Roles</label>
-            <select id="newRole" class="custom-select bd-primary"
-                    size="2" name="roles" multiple="multiple">
-                <option th:each="role : ${roles}"
-                        th:selected="${role.name}==ROLE_USER"
-                        th:text="${#strings.replace(role.name, 'ROLE_', '')}"
-                        th:value="${role.id}">
-                </option>
-            </select>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Create</button>
+<div class="container col-4 form-group text-center">
+    <form role="form" id="user-addform" onsubmit="return false;">
+    <div>
+        <label for="newFirstName">First name</label>
+        <input type="text" class="form-control" placeholder="Enter first name" name="firstName" id="newfirstName">
+    </div>
+    <div>
+        <label for="newLastName">Last name</label>
+        <input type="text" class="form-control" placeholder="Enter last name" name="lastName" id="newlastName">
+    </div>
+    <div>
+        <label for="newAge">Age</label>
+        <input type="number" class="form-control" name="age" id="newage">
+    </div>
+    <div>
+        <label for="newEmail">E-mail</label>
+        <input type="text" class="form-control" placeholder="Enter e-mail" name="email" id="newemail" autocomplete="username">
+    </div>
+    <div id="password-div">
+        <label for="newPassword">Password</label>
+        <input type="password" class="form-control" placeholder="Enter password" name="password" id="newpassword" autocomplete="current-password">
+    </div>
+    <div>
+        <label for="newRoles">Role</label>
+        <select multiple class="form-control" id="newroles" name="roles[]"></select>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-success mt-3">Add new User</button>
+    </div>
     </form>
 </div>
