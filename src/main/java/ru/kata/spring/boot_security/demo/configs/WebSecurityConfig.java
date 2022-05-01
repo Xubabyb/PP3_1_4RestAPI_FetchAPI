@@ -1,44 +1,58 @@
 package ru.kata.spring.boot_security.demo.configs;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.configs.handler.CustomAccessDeniedHandler;
 import ru.kata.spring.boot_security.demo.configs.handler.CustomAuthenticationFailureHandler;
 import ru.kata.spring.boot_security.demo.configs.handler.CustomAuthenticationSuccessHandler;
 import ru.kata.spring.boot_security.demo.configs.handler.CustomUrlLogoutSuccessHandler;
+import ru.kata.spring.boot_security.demo.service.AppService;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
-    private final UserDetailsService userDetailsService;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
-    private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
-    private final CustomUrlLogoutSuccessHandler customUrlLogoutSuccessHandler;
+    // сервис, с помощью которого тащим пользователя
+    private final AppService appService;
+
+    private final PasswordEncoder passwordEncoder;
+
+    // класс, в котором описана логика перенаправления пользователей по ролям
+    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    // класс, в котором описана логика при неудачной авторизации
+    private final CustomAuthenticationFailureHandler authenticationFailureHandler;
+
+    // класс, в котором описана логика при удачной авторизации
+    private final CustomUrlLogoutSuccessHandler urlLogoutSuccessHandler;
+
+    // класс, в котором описана логика при отказе в доступе
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
-    public WebSecurityConfig(
-            @Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
-            CustomAccessDeniedHandler customAccessDeniedHandler,
-            CustomAuthenticationFailureHandler customAuthenticationFailureHandler,
-            CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
-            CustomUrlLogoutSuccessHandler customUrlLogoutSuccessHandler) {
-        this.userDetailsService = userDetailsService;
-        this.customAccessDeniedHandler = customAccessDeniedHandler;
-        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
-        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
-        this.customUrlLogoutSuccessHandler = customUrlLogoutSuccessHandler;
+    public WebSecurityConfig(AppService appService,
+                             PasswordEncoder passwordEncoder,
+                             CustomAuthenticationSuccessHandler authenticationSuccessHandler,
+                             CustomAuthenticationFailureHandler authenticationFailureHandler,
+                             CustomUrlLogoutSuccessHandler urlLogoutSuccessHandler,
+                             CustomAccessDeniedHandler accessDeniedHandler) {
+        this.appService = appService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.authenticationFailureHandler = authenticationFailureHandler;
+        this.urlLogoutSuccessHandler = urlLogoutSuccessHandler;
+        this.accessDeniedHandler = accessDeniedHandler;
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(appService).passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -46,37 +60,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 // Декларирует, что все запросы к любой конечной точке должны быть авторизованы, иначе они должны быть отклонены
                 .authorizeRequests()
-                .antMatchers("/", "/css/**", "/js/**", "/webjars/**").permitAll()
+                .antMatchers("/", "/img/**", "/css/**", "/js/**", "/webjars/**").permitAll()
+//                .antMatchers(HttpMethod.GET, "/api/users/*").hasRole("USER")
                 .antMatchers("/api/users/*", "/api/roles").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler);
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler);
+//                .and().sessionManagement().disable(); // сообщает Spring, что не следует хранить информацию о сеансе для пользователей, поскольку это не нужно для API
+//                .and().httpBasic(); // сообщает Spring, чтобы он ожидал базовую HTTP аутентификацию
+
         http.formLogin()
                 .loginPage("/") // указываем страницу с формой логина
                 .permitAll() // даем доступ к форме логина всем
                 .loginProcessingUrl("/login")
-                .successHandler(customAuthenticationSuccessHandler)
-                .failureHandler(customAuthenticationFailureHandler);
+                .successHandler(authenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler);
         http.logout()
                 .logoutUrl("/logout")
                 .clearAuthentication(true)
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
                 .logoutSuccessUrl("/")
-                .logoutSuccessHandler(customUrlLogoutSuccessHandler)
+                .logoutSuccessHandler(urlLogoutSuccessHandler)
                 .permitAll()
         ;
     }
-
-    @Bean
-    protected PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
-
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
-
 }
