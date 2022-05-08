@@ -11,7 +11,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-public interface AppService extends UserDetailsService {
+public interface AppService {
 
     List<User> findAllUsers();
 

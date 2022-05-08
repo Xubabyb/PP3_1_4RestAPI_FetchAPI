@@ -1,17 +1,18 @@
 package ru.kata.spring.boot_security.demo.configs;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.configs.handler.CustomAccessDeniedHandler;
 import ru.kata.spring.boot_security.demo.configs.handler.CustomAuthenticationFailureHandler;
 import ru.kata.spring.boot_security.demo.configs.handler.CustomAuthenticationSuccessHandler;
 import ru.kata.spring.boot_security.demo.configs.handler.CustomUrlLogoutSuccessHandler;
-import ru.kata.spring.boot_security.demo.service.AppService;
 
 @Configuration
 @EnableWebSecurity
@@ -19,7 +20,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     // сервис, с помощью которого тащим пользователя
-    private final AppService appService;
+    private final UserDetailsService userDetailsService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -36,13 +37,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Autowired
-    public WebSecurityConfig(AppService appService,
+    public WebSecurityConfig(@Qualifier("userDetailsServiceImpl") UserDetailsService userDetailsService,
                              PasswordEncoder passwordEncoder,
                              CustomAuthenticationSuccessHandler authenticationSuccessHandler,
                              CustomAuthenticationFailureHandler authenticationFailureHandler,
                              CustomUrlLogoutSuccessHandler urlLogoutSuccessHandler,
                              CustomAccessDeniedHandler accessDeniedHandler) {
-        this.appService = appService;
+        this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
         this.authenticationFailureHandler = authenticationFailureHandler;
@@ -52,7 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(appService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
     }
 
     @Override
